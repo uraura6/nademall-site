@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なでモール — 癒しのひとときを</title>
+<meta name="description" content="様々な撫でを体験できるVRChatグループ。それぞれが個人イベントの集合体。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1c2548;
+    --navy-light: #242f5e;
+    --navy-deep: #111830;
+    --teal: #4fcbcb;
+    --lavender: #c8a8e9;
+    --gold: #e8c97a;
+    --white: #f0eef8;
+    --muted: rgba(240,238,248,0.52);
+    --card-bg: rgba(20,28,62,0.75);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--navy-deep);
+    color: var(--white);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* Page-wide ambient nebula (fixed, behind everything) */
+  .cosmos-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 900px 700px at 18% 25%, rgba(79,203,203,0.11) 0%, transparent 65%),
+      radial-gradient(ellipse 700px 900px at 85% 72%, rgba(200,168,233,0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 600px 500px at 60% 15%, rgba(90,80,230,0.08) 0%, transparent 65%),
+      radial-gradient(ellipse 500px 600px at 25% 82%, rgba(220,100,160,0.06) 0%, transparent 65%),
+      radial-gradient(ellipse 400px 400px at 70% 50%, rgba(79,203,180,0.05) 0%, transparent 65%);
+    animation: cosmosShift 40s ease-in-out infinite alternate;
+  }
+  @keyframes cosmosShift {
+    0%   { opacity: 0.8; }
+    50%  { opacity: 1.0; }
+    100% { opacity: 0.85; }
+  }
+
+  .page-wrap { position: relative; z-index: 1; }
+
+  section { position: relative; padding: 100px 24px; }
+  .section-inner { max-width: 1000px; margin: 0 auto; }
+  .section-label {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 24px;
+    opacity: 0.8;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(17,24,48,0.55);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .nav-logo {
+    width: 34px; opacity: 0.9;
+    mask-image: radial-gradient(circle, black 56%, transparent 76%);
+    -webkit-mask-image: radial-gradient(circle, black 56%, transparent 76%);
+  }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a {
+    font-size: 0.73rem; letter-spacing: 0.18em;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+  @media (max-width: 500px) { .nav-links { display: none; } }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 0 24px; overflow: hidden;
+  }
+  .hero-glows { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+  }
+  .g1 {
+    width: min(800px,100vw); height: min(800px,100vw);
+    top: -30%; left: -20%;
+    background: radial-gradient(circle, rgba(79,203,203,0.28) 0%, transparent 60%);
+    filter: blur(50px);
+    animation: gfloat 24s ease-in-out infinite;
+  }
+  .g2 {
+    width: min(700px,90vw); height: min(700px,90vw);
+    bottom: -25%; right: -15%;
+    background: radial-gradient(circle, rgba(200,168,233,0.24) 0%, transparent 60%);
+    filter: blur(60px);
+    animation: gfloat 30s ease-in-out infinite reverse;
+  }
+  .g3 {
+    width: min(500px,70vw); height: min(500px,70vw);
+    top: 25%; left: 40%;
+    background: radial-gradient(circle, rgba(80,95,230,0.18) 0%, transparent 60%);
+    filter: blur(70px);
+    animation: gfloat 38s ease-in-out infinite 6s;
+  }
+  .g4 {
+    width: min(320px,50vw); height: min(320px,50vw);
+    top: 5%; right: 15%;
+    background: radial-gradient(circle, rgba(232,201,122,0.16) 0%, transparent 60%);
+    filter: blur(44px);
+    animation: gfloat 20s ease-in-out infinite 3s;
+  }
+  .g5 {
+    width: min(400px,60vw); height: min(400px,60vw);
+    bottom: 5%; left: 30%;
+    background: radial-gradient(circle, rgba(220,100,180,0.12) 0%, transparent 60%);
+    filter: blur(56px);
+    animation: gfloat 28s ease-in-out infinite 10s;
+  }
+  .g6 {
+    width: min(280px,45vw); height: min(280px,45vw);
+    top: 50%; left: 5%;
+    background: radial-gradient(circle, rgba(100,200,255,0.12) 0%, transparent 60%);
+    filter: blur(44px);
+    animation: gfloat 22s ease-in-out infinite 5s reverse;
+  }
+  @keyframes gfloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    25%  { transform: translate(34px,-24px) scale(1.06); }
+    50%  { transform: translate(-20px,30px) scale(0.94); }
+    75%  { transform: translate(24px,14px) scale(1.03); }
+  }
+  .recruit-glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    width: min(640px,90vw); height: min(640px,90vw);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, rgba(200,168,233,0.12) 0%, transparent 62%);
+    filter: blur(64px);
+  }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-logo {
+    width: min(230px,54vw); margin: 0 auto 30px;
+    animation: logoIn 1.2s cubic-bezier(.22,1,.36,1) both;
+    filter: drop-shadow(0 0 30px rgba(79,203,203,0.4));
+    mask-image: radial-gradient(circle, black 56%, transparent 76%);
+    -webkit-mask-image: radial-gradient(circle, black 56%, transparent 76%);
+  }
+  @keyframes logoIn {
+    from { opacity:0; transform: translateY(40px) scale(0.9); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .hero-tagline {
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(1.1rem,4vw,1.75rem);
+    letter-spacing: 0.26em; color: var(--lavender);
+    animation: fadeUp 1.4s cubic-bezier(.22,1,.36,1) 0.3s both;
+  }
+  .hero-sub {
+    margin-top: 14px; font-size: 0.82rem; letter-spacing: 0.15em; color: var(--muted);
+    animation: fadeUp 1.4s cubic-bezier(.22,1,.36,1) 0.55s both;
+  }
+  .hero-scroll-hint {
+    position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted); font-size: 0.68rem; letter-spacing: 0.2em;
+    animation: fadeUp 1.4s cubic-bezier(.22,1,.36,1) 1.2s both;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--teal), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity:0.3; transform:scaleY(0.8); }
+    50% { opacity:1; transform:scaleY(1); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── CONCEPT ── */
+  #concept { background: linear-gradient(180deg,transparent 0%,rgba(79,203,203,0.03) 50%,transparent 100%); }
+  .concept-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 36px; }
+  @media (min-width: 600px) { .concept-grid { grid-template-columns: repeat(2,1fr); } }
+  .concept-item {
+    display: flex; align-items: flex-start; gap: 18px;
+    padding: 24px 28px;
+    background: var(--card-bg);
+    border: 1px solid rgba(79,203,203,0.1);
+    border-radius: 14px; backdrop-filter: blur(12px);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .concept-item:hover { border-color: rgba(79,203,203,0.3); box-shadow: 0 0 20px rgba(79,203,203,0.05); }
+  .concept-dot {
+    flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--teal); margin-top: 9px; box-shadow: 0 0 8px var(--teal);
+  }
+  .concept-text { font-family: 'Kaisei Decol', serif; font-size: clamp(0.95rem,2.5vw,1.15rem); line-height: 1.7; }
+
+  /* ── JOIN ── */
+  #join { text-align: center; }
+  .join-heading {
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(1.3rem,5vw,2.2rem); font-weight: 500; margin-bottom: 16px;
+  }
+  .join-cta {
+    display: inline-block; margin: 28px 0;
+    padding: 16px 48px;
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(0.95rem,3vw,1.25rem); letter-spacing: 0.12em;
+    color: var(--navy-deep);
+    background: linear-gradient(135deg, var(--teal) 0%, #6ee7e7 100%);
+    border-radius: 100px; text-decoration: none;
+    box-shadow: 0 0 36px rgba(79,203,203,0.28), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .join-cta:hover { transform: translateY(-3px); box-shadow: 0 0 56px rgba(79,203,203,0.45), inset 0 1px 0 rgba(255,255,255,0.3); }
+  .join-tag { font-size: 0.9rem; letter-spacing: 0.1em; color: var(--lavender); }
+  .join-tag strong { color: var(--teal); }
+  .hashtag-link { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
+  .hashtag-link:hover { opacity: 0.8; }
+
+  /* ── RULES ── */
+  .rules-box {
+    background: rgba(200,168,233,0.05);
+    border: 1px solid rgba(200,168,233,0.18);
+    border-radius: 18px; padding: 36px 40px; margin-top: 28px;
+    backdrop-filter: blur(8px);
+  }
+  .rule-item {
+    display: flex; gap: 14px; padding: 14px 0;
+    border-bottom: 1px solid rgba(200,168,233,0.08);
+    font-size: 0.93rem; line-height: 1.8; color: rgba(240,238,248,0.85);
+  }
+  .rule-item:last-child { border-bottom: none; }
+  .rule-icon { flex-shrink: 0; color: var(--lavender); margin-top: 2px; }
+  .rules-note {
+    margin-top: 22px; padding: 14px 18px;
+    background: rgba(79,203,203,0.05);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.83rem; color: var(--muted); line-height: 1.7;
+  }
+
+  /* ── MEMBERS ── */
+  .members-heading {
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(1.8rem,6vw,3rem); font-weight: 400; margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--white) 40%, var(--lavender));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .members-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 48px; letter-spacing: 0.05em; }
+
+  .members-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  @media (min-width: 560px) { .members-grid { grid-template-columns: repeat(2,1fr); } }
+  @media (min-width: 860px) { .members-grid { grid-template-columns: repeat(3,1fr); } }
+
+  /* ── Card ── */
+  .member-card {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 18px;
+    border: 1px solid rgba(79,203,203,0.1);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
+    display: flex; flex-direction: column;
+  }
+  .member-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 16px 52px rgba(79,203,203,0.13), 0 0 0 1px rgba(79,203,203,0.28);
+    border-color: rgba(79,203,203,0.28);
+  }
+
+  /* Photo header */
+  .card-photo-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a2040 0%, #2a3568 100%);
+    flex-shrink: 0;
+  }
+  .card-photo {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  .member-card:hover .card-photo { transform: scale(1.04); }
+  .card-photo-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 55%;
+    background: linear-gradient(to bottom, transparent, rgba(14,20,50,0.72));
+    pointer-events: none;
+  }
+  /* Placeholder when no photo / error */
+  .card-photo-wrap.no-photo .card-photo { display: none; }
+  .card-photo-wrap.no-photo::after {
+    content: '✦';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem; color: rgba(79,203,203,0.25);
+  }
+
+  /* Card body */
+  .card-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 0; flex: 1; }
+
+  .card-host {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 1.18rem; font-weight: 500;
+    color: var(--white); line-height: 1.35;
+    margin-bottom: 9px;
+  }
+
+  .card-event {
+    display: inline-block;
+    font-size: 0.7rem; letter-spacing: 0.06em;
+    color: var(--teal);
+    background: rgba(79,203,203,0.09);
+    border: 1px solid rgba(79,203,203,0.22);
+    border-radius: 6px; padding: 3px 10px;
+    margin-bottom: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .card-tag {
+    font-size: 0.66rem; letter-spacing: 0.04em;
+    color: var(--lavender);
+    background: rgba(200,168,233,0.1);
+    border: 1px solid rgba(200,168,233,0.2);
+    border-radius: 100px; padding: 2px 9px;
+  }
+
+  .card-style {
+    font-size: 0.86rem; font-weight: 400;
+    color: rgba(240,238,248,0.88); line-height: 1.65;
+    margin-bottom: 8px; padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .card-detail {
+    font-size: 0.76rem; color: var(--muted); line-height: 1.78;
+    flex: 1;
+    margin-bottom: 14px;
+  }
+
+  /* Social links */
+  .card-links { display: flex; gap: 8px; margin-top: auto; }
+  .card-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    font-size: 0.7rem; letter-spacing: 0.05em;
+    text-decoration: none; border-radius: 100px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .card-link-x {
+    color: rgba(240,238,248,0.65);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .card-link-x:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+  .card-link-vrc {
+    color: var(--teal);
+    border: 1px solid rgba(79,203,203,0.2);
+  }
+  .card-link-vrc:hover { background: rgba(79,203,203,0.1); }
+
+  /* ── RECRUIT ── */
+  #recruit { text-align: center; position: relative; overflow: hidden; }
+  .recruit-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+  .recruit-badge {
+    display: inline-block; font-size: 0.7rem; letter-spacing: 0.3em;
+    color: var(--gold); border: 1px solid rgba(232,201,122,0.28);
+    border-radius: 100px; padding: 5px 18px; margin-bottom: 26px;
+  }
+  .recruit-heading {
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(1.6rem,6vw,2.7rem); font-weight: 400;
+    line-height: 1.4; margin-bottom: 22px;
+  }
+  .recruit-body { font-size: 1rem; line-height: 1.9; color: rgba(240,238,248,0.8); margin-bottom: 32px; }
+  .recruit-tag {
+    display: inline-block; font-family: 'Kaisei Decol', serif;
+    font-size: 1rem; letter-spacing: 0.12em; color: var(--teal);
+    padding: 10px 28px; border: 1px solid rgba(79,203,203,0.32);
+    border-radius: 100px; box-shadow: 0 0 18px rgba(79,203,203,0.1);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 1px; height: 56px;
+    background: linear-gradient(to bottom, transparent, var(--teal), transparent);
+    margin: 0 auto; opacity: 0.35;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 44px 24px;
+    font-size: 0.73rem; color: rgba(240,238,248,0.22);
+    letter-spacing: 0.08em;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    position: relative; z-index: 1;
+  }
+  footer .footer-logo {
+    width: 44px; margin: 0 auto 14px; opacity: 0.45;
+    mask-image: radial-gradient(circle, black 56%, transparent 76%);
+    -webkit-mask-image: radial-gradient(circle, black 56%, transparent 76%);
+  }
+</style>
+</head>
+<body>
+
+<div class="cosmos-bg"></div>
+<canvas id="starfield"></canvas>
+
+<nav>
+  <img src="assets/logo.png" alt="なでモール" class="nav-logo">
+  <ul class="nav-links">
+    <li><a href="#concept">concept</a></li>
+    <li><a href="#join">参加方法</a></li>
+    <li><a href="#members">member</a></li>
+    <li><a href="#recruit">募集</a></li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-glows" aria-hidden="true">
+      <div class="glow g1"></div>
+      <div class="glow g2"></div>
+      <div class="glow g3"></div>
+      <div class="glow g4"></div>
+      <div class="glow g5"></div>
+      <div class="glow g6"></div>
+    </div>
+    <div class="hero-content">
+      <img class="hero-logo" src="assets/logo.png" alt="なでモール ロゴ">
+      <p class="hero-tagline">癒しのひとときを</p>
+      <p class="hero-sub">VRChat 撫でグループ</p>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <div class="scroll-line"></div>
+      <span>scroll</span>
+    </div>
+  </section>
+
+  <!-- CONCEPT -->
+  <section id="concept">
+    <div class="section-inner">
+      <p class="section-label reveal">concept</p>
+      <div class="concept-grid">
+        <div class="concept-item reveal" style="transition-delay:.05s">
+          <div class="concept-dot"></div>
+          <p class="concept-text">様々な撫でを体験できるグループ</p>
+        </div>
+        <div class="concept-item reveal" style="transition-delay:.12s">
+          <div class="concept-dot"></div>
+          <p class="concept-text">それぞれが個人イベントの集合体</p>
+        </div>
+        <div class="concept-item reveal" style="transition-delay:.19s">
+          <div class="concept-dot"></div>
+          <p class="concept-text">イベントはグループポストにて開催連絡</p>
+        </div>
+        <div class="concept-item reveal" style="transition-delay:.26s">
+          <div class="concept-dot"></div>
+          <p class="concept-text">撫でられたいその気持ちにすぐ JOIN！</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider reveal"></div>
+
+  <!-- JOIN -->
+  <section id="join">
+    <div class="section-inner" style="text-align:center">
+      <p class="section-label reveal">参加方法</p>
+      <h2 class="join-heading reveal">グループにて JOIN</h2>
+      <p class="join-tag reveal">VRChat グループ「なでモール」を検索して参加</p>
+      <div class="reveal">
+        <a href="https://vrchat.com/home/group/grp_99dd6c9b-2998-43e5-acc3-b9f69f9d8c00" class="join-cta" target="_blank" rel="noopener">グループページへ</a>
+      </div>
+      <p class="join-tag reveal">
+        イベントの様子を知りたい方は&emsp;<a href="https://x.com/search?q=%EF%BC%83%E3%81%AA%E3%81%A7%E3%83%A2%E3%83%BC%E3%83%AB&src=typed_query&f=top" target="_blank" rel="noopener" class="hashtag-link"><strong>＃なでモール</strong></a>&emsp;にて！
+      </p>
+    </div>
+  </section>
+
+  <div class="divider reveal"></div>
+
+  <!-- RULES -->
+  <section id="rules">
+    <div class="section-inner">
+      <p class="section-label reveal">参加時のお願い事</p>
+      <div class="rules-box reveal">
+        <div class="rule-item">
+          <span class="rule-icon">🌸</span>
+          <span>イベントに参加して<strong>3か月以内</strong>は、そのイベントへの JOIN 速度を手加減してください。</span>
+        </div>
+        <div class="rule-item">
+          <span class="rule-icon">✨</span>
+          <span>まだ参加されたことのないイベントについては、通常通り JOIN していただいて大丈夫です。</span>
+        </div>
+        <p class="rules-note">※ なでモールは個人イベントの集合体です！それぞれが個別のイベントです！</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider reveal"></div>
+
+  <!-- MEMBERS -->
+  <section id="members">
+    <div class="section-inner">
+      <p class="section-label reveal">member</p>
+      <h2 class="members-heading reveal">なでてくれる人たち</h2>
+      <p class="members-sub reveal">各メンバーが個別にイベントを開催しています</p>
+
+      <div class="members-grid">
+
+        <!-- うら -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1BxVUdlmPyHMy1fmqcwWGbgu8AZL3C9nF" alt="うら" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">うら</div>
+            <div class="card-event">うらなで</div>
+            <div class="card-tags"><span class="card-tag">#うらなで</span></div>
+            <div class="card-style">対面＆鏡撫で</div>
+            <p class="card-detail">ゆったりとした距離感近めの撫で、温かみを感じてください。落ち着いたワールドでゆったりと癒します。</p>
+            <div class="card-links">
+              <a href="https://x.com/ura6_vrc" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @ura6_vrc</a>
+              <a href="https://vrchat.com/home/user/usr_6b5ca918-90ad-4d09-bbd2-3b209c08951c" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- おこげ33 -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1ZkH6tIlkAEdrP8keiBw0DL1CP-lqJFG9" alt="おこげ33" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">おこげ33</div>
+            <div class="card-event">おこげさんのなでなで部屋</div>
+            <div class="card-style">対面、鏡越し、膝枕</div>
+            <p class="card-detail">癒せるなでなでができればいいなと思っています。1対1で30分から1時間程度。軽いワールドを用意しているのでスペックに不安がある方でもお気軽にどうぞ。</p>
+            <div class="card-links">
+              <a href="https://x.com/okoge33_VRC" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @okoge33_VRC</a>
+              <a href="https://vrchat.com/home/user/usr_19665006-f1b4-4a1f-a696-969d37787e8f" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ねこざらち -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1elHbbhNiy1pRVQ8AOVKf1_LnOHtDiK-k" alt="ねこざらち" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">ねこざらち</div>
+            <div class="card-event">ねこちのおにわ</div>
+            <div class="card-tags"><span class="card-tag">#ねこちのおにわ</span></div>
+            <div class="card-style">ゆっくり対面なで（癒し系）＋ASMR</div>
+            <p class="card-detail">のんびりゆっくりな時間を過ごしましょう～。1対1で20分間。</p>
+            <div class="card-links">
+              <a href="https://x.com/nekochiro_" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @nekochiro_</a>
+              <a href="https://vrchat.com/home/user/usr_21142466-6ab3-440d-8ef6-5418deb47afd" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- とこみや -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1wp5SAmawvmNBKjdidqofNHM3jBLjgMMb" alt="とこみや" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">とこみや</div>
+            <div class="card-event">個人なで屋 ゆらぎ</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡撫での四方から、パフォーマンスよりの動きがある撫でです</div>
+            <p class="card-detail">Ｖ感が無い人で楽しめる撫でをコンセプトに撫でてます。マンツーマンで30分から60分程度。</p>
+            <div class="card-links">
+              <a href="https://x.com/Regi_Toko" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @Regi_Toko</a>
+              <a href="https://vrchat.com/home/user/usr_90403fdf-e82c-407d-8edd-04f9a59eadd9" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- いちや -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1uVbhgD6Y51xr_pNRpHuBIfg7sSTHkenR" alt="いちや" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">いちや</div>
+            <div class="card-event">いちやの撫で練習</div>
+            <div class="card-tags"><span class="card-tag">#いちやの撫で練習</span></div>
+            <div class="card-style">おしゃべりしながらわしゃわしゃ撫でるよ！</div>
+            <p class="card-detail">1対1で15分～30分程度、おしゃべりしながらのんびりと！</p>
+            <div class="card-links">
+              <a href="https://x.com/itivrc" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @itivrc</a>
+              <a href="https://vrchat.com/home/user/usr_85ec7e38-024a-4cb5-b102-fe094a511c06" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- シャノノン -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1pCJRwA6Gd6vRnBEHYc_tA4JaRgsHPQE_" alt="シャノノン" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">シャノノン</div>
+            <div class="card-event">シャノノンのゆるなで 出張版</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面・鏡撫で 寝かしつけ ポンポン</div>
+            <p class="card-detail">温かくて、安心できる癒し撫でを感じてほしいです。マンツーマンで40分から1時間程度。</p>
+            <div class="card-links">
+              <a href="https://x.com/Shanonon_T12" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @Shanonon_T12</a>
+              <a href="https://vrchat.com/home/user/usr_119168bc-c6db-4fbd-a118-7a296c662d97" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Romyyi -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1xUIV7d301LtIoxEUuNxRXU7s0CItwdRC" alt="Romyyi" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">Romyyi</div>
+            <div class="card-event">Romyyiより</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面・鏡・膝枕・etc. お好きな姿勢でどうぞ</div>
+            <p class="card-detail">ただただのんびりしていってください～。1対1で20分程、毎回ワールドとBGMを変えているのでお楽しみに。タグは個人用のものが付いてる子もおります！</p>
+            <div class="card-links">
+              <a href="https://x.com/Romyyi6363" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @Romyyi6363</a>
+              <a href="https://vrchat.com/home/user/usr_f17de225-0d10-41e0-9ca1-5fcd82b18e82" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- さんすう -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1JnwVC0MzrSme6HJpJE4d9WhMPEMRb3OR" alt="さんすう" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">さんすう</div>
+            <div class="card-event">さんすうさんのナデルーム</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡撫で、癒し系、ゆっくり</div>
+            <p class="card-detail">眠くなるリラックス撫でをお届けします。約20分間の1対1ナデ。</p>
+            <div class="card-links">
+              <a href="https://x.com/VR_Sansuu" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @VR_Sansuu</a>
+              <a href="https://vrchat.com/home/user/usr_575fd5a3-510a-43e1-93a8-35186f2d5893" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- KissKill -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1WlmvtafghzraBb6O-7DflJ_upY4QAPvJ" alt="KissKill" loading="lazy" style="object-position:center center" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">KissKill<br><small style="font-size:.75em;opacity:.65">ショウガ３＆-御月-</small></div>
+            <div class="card-event">【Team KissKill】撫で寝かし</div>
+            <div class="card-tags"><span class="card-tag">#KissKill</span></div>
+            <div class="card-style">膝枕、横になって撫で寝かし。お喋りしながら癒す系</div>
+            <p class="card-detail">お姉さん二人と過ごす、優しくて甘い時間 💜💙💛。基本KissKill２人：お客様１人３０分程。</p>
+            <div class="card-links">
+              <a href="https://x.com/ginger3_lemo" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @ginger3_lemo</a>
+              <a href="https://vrchat.com/home/user/usr_bb416cfb-b8f4-44d6-9f2e-092d47781d8f" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- りとりと -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/150_yQijBYKTFZ9TL4-FDkGb7O4O3QjXU" alt="りとりと" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">りとりと</div>
+            <div class="card-event">なで日和</div>
+            <div class="card-tags"><span class="card-tag">#なで日和</span></div>
+            <div class="card-style">お話や音を楽しみながらの癒し撫で</div>
+            <p class="card-detail">ゆったりと穏やかな時間をすごしましょう！</p>
+            <div class="card-links">
+              <a href="https://x.com/ritorito_vrc" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @ritorito_vrc</a>
+              <a href="https://vrchat.com/home/user/usr_e9d2df6d-7151-4fe0-822e-6c8d48a36b7d" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- てすたー -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1_6KJScplRjjB7U_8h4wdJWb-TyFT_-22" alt="てすたー" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">てすたー</div>
+            <div class="card-event">てすなで</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">正面からの癒し系</div>
+            <p class="card-detail">ゆるっと癒したいです～。約20～30分程度、正面のみ。</p>
+            <div class="card-links">
+              <a href="https://x.com/tester6000" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @tester6000</a>
+              <a href="https://vrchat.com/home/user/usr_c47352ab-7175-4629-ba39-0ca1b9549db5" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- shuriken -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1QlbD9LLnLnz2wweEReU2wsxF4DQm8Xwo" alt="shuriken" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">shuriken (ken)</div>
+            <div class="card-event">なで日和</div>
+            <div class="card-tags"><span class="card-tag">#なで日和</span></div>
+            <div class="card-style">正面か後ろから静かにもふもふ撫で</div>
+            <p class="card-detail">寝落ちしそうなもふもふの癒しを。1対1なでを30分×2回ローテ。</p>
+            <div class="card-links">
+              <a href="https://x.com/shuri_ken5" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @shuri_ken5</a>
+              <a href="https://vrchat.com/home/user/usr_08461074-3eba-4a93-a5ae-3d33408a0ea7" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ほのみん -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1POBSsiHigdttv2XcOhdoZ430K_8DuS6U" alt="ほのみん" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">ほのみん</div>
+            <div class="card-event">ほのなで</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面や鏡撫で等いろんな撫で方。ASMRや感度刺激が含まれる場合があります。</div>
+            <p class="card-detail">距離感の近いイチャなでをします。1対1個室で30分から60分程度。</p>
+            <div class="card-links">
+              <a href="https://x.com/honomin3" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @honomin3</a>
+              <a href="https://vrchat.com/home/user/usr_3ae71848-8afe-4b04-9319-0bfaea6b638f" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- せれす -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1H-C6n3GfkpYmSdRxBRpg2DTpZdrpUR7O" alt="せれす" loading="lazy" style="object-position:center 25%" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">せれす（seresu）</div>
+            <div class="card-event">Rub Room</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡撫で、感度撫で、寝かしつけ</div>
+            <p class="card-detail">えっちな感度撫でします。対面→鏡撫でをシームレスに行う20分感度撫でコース、またはASMRと感度撫で施術の60分癒しなでコース。</p>
+            <div class="card-links">
+              <a href="https://x.com/seresuXD" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @seresuXD</a>
+              <a href="https://vrchat.com/home/user/usr_925a4646-8d38-45a4-9644-2473b1070020" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- れがしー -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1C29RTNINNQAeldh1OLlVRGNKRvY-zu93" alt="れがしー" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">れがしー</div>
+            <div class="card-event">なでのま</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡越し、膝枕、ASMR。希望に合わせてゆったりと</div>
+            <p class="card-detail">心地よい癒しになれば嬉しいです。1対1で20分～30分程度。</p>
+            <div class="card-links">
+              <a href="https://x.com/legacycode8" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @legacycode8</a>
+              <a href="https://vrchat.com/home/user/usr_22ad924e-8f4f-4720-b381-b2872bd9a15c" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ずむるっど -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/11ufLfq0EOQFEI7pST_PAP25059Yb2I4t" alt="ずむるっど" loading="lazy" style="object-position:center center" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">ずむるっど</div>
+            <div class="card-event">なで教室</div>
+            <div class="card-tags"><span class="card-tag">#なで教室</span></div>
+            <div class="card-style">対面＆鏡なで、ゆっくり落ち着く系</div>
+            <p class="card-detail">先生、私を育てておくれよ。1対1で20分前後、ゆっくり目のなで。なでられた後で一言アドバイスがもらえたら嬉しいな～</p>
+            <div class="card-links">
+              <a href="https://x.com/Zumrud_vr" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @Zumrud_vr</a>
+              <a href="https://vrchat.com/home/user/usr_d9c6bf08-5c95-4d4e-9fd5-1fce06b51e1f" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- myi-su -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1k-UxBvarWV7VNnKEShEXypMi_y7l8xuc" alt="myi-su" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">myi-su</div>
+            <div class="card-event">Warma fusya</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span><span class="card-tag">#ふわ撫で</span></div>
+            <div class="card-style">袖を使ったゆったりめの撫で</div>
+            <p class="card-detail">布団に包みこまれるようなふんわり感。多様なアバターとコースによって好みに合わせたあなただけの時間をご用意。1対1を15分から気が済むまで。</p>
+            <div class="card-links">
+              <a href="https://vrchat.com/home/user/usr_4bbc75c8-5b86-44a6-8585-8f8e158f62ba" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chiyo_k -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1s4QKTcAqiHsRJ3dye_VPOD-P4MbRLXng" alt="Chiyo_k" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">Chiyo_k</div>
+            <div class="card-event">ちよなでモール店</div>
+            <div class="card-tags"><span class="card-tag">#ちよなでモール店</span></div>
+            <div class="card-style">優しさたっぷり、いたずらをひとつまみ</div>
+            <p class="card-detail">ふわっとしたなで方って言ってた！1対１で30分程、対面なでと鏡なで。なめらかハンドジェスチャーの作者、ちよです！</p>
+            <div class="card-links">
+              <a href="https://x.com/ChiyokVRC" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @ChiyokVRC</a>
+              <a href="https://vrchat.com/home/user/usr_98cae068-6728-4eaa-b3a8-4dcb5f703f24" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- たぬきち丸 -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1XeMGE8HLoUG_jkaDEXit6j9yYFLovhkU" alt="たぬきち丸" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">たぬきち丸</div>
+            <div class="card-event">たぬきの毛づくろい部屋</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡撫で、膝枕、添い寝、V感刺激系</div>
+            <p class="card-detail">癒し系撫でを目指してましたが、V感強い人を撫でてるといじめたくなる欲を抑えられなくなります。1対1なでを30分×2回ローテ。</p>
+            <div class="card-links">
+              <a href="https://x.com/tanukitimaru3" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @tanukitimaru3</a>
+              <a href="https://vrchat.com/home/user/usr_bdcda6ee-ac5b-4e49-89b5-077ff953120e" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ニーナ -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1mJZOojdIfGl4g57vIKSLeCa8f_FnJWZn" alt="ニーナ" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">ニーナ</div>
+            <div class="card-event">２７なで</div>
+            <div class="card-tags"><span class="card-tag">#なでモール</span></div>
+            <div class="card-style">対面、鏡、膝枕、抱きしめ撫で</div>
+            <p class="card-detail">来てくださった方が楽しい時間になりますように！1対1で15分～30分程度。</p>
+            <div class="card-links">
+              <a href="https://x.com/ninaniumu" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @ninaniumu</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ゆきひら -->
+        <div class="member-card reveal">
+          <div class="card-photo-wrap">
+            <img class="card-photo" src="https://lh3.googleusercontent.com/d/1lHk8eIN5fbE_ZxkFODncqksk9sVrTwB3" alt="ゆきひら" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
+            <div class="card-photo-overlay"></div>
+          </div>
+          <div class="card-body">
+            <div class="card-host">ゆきひら</div>
+            <div class="card-event">ゆきなで</div>
+            <div class="card-tags"><span class="card-tag">#ゆきなで</span></div>
+            <div class="card-style">対面＆鏡撫で 癒し～寝かしつけ系</div>
+            <p class="card-detail">おやすみ前に癒しのひとときを！夜遅めの時間に1対1で20分～30分程度。無言勢による対面＆鏡撫で。</p>
+            <div class="card-links">
+              <a href="https://x.com/yukihira_vrc" class="card-link card-link-x" target="_blank" rel="noopener">𝕏 @yukihira_vrc</a>
+              <a href="https://vrchat.com/home/user/usr_93b7c306-dfdc-4faa-a474-0d8859374c20" class="card-link card-link-vrc" target="_blank" rel="noopener">VRC</a>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /members-grid -->
+    </div>
+  </section>
+
+  <div class="divider reveal"></div>
+
+  <!-- RECRUIT -->
+  <section id="recruit">
+    <div class="recruit-glow" aria-hidden="true"></div>
+    <div class="recruit-inner">
+      <div class="recruit-badge reveal">開催 / 参加者希望</div>
+      <h2 class="recruit-heading reveal">様々な撫でをしたい！<br>参加したい！</h2>
+      <p class="recruit-body reveal">そんな方はこちらまで<br>応募お待ちしています！</p>
+      <div class="reveal">
+        <a href="https://docs.google.com/forms/d/1oTtPuAfXpfh979eFnztmoPH-GfT4N5rwsxYtq6mI2XA/viewform" class="join-cta" target="_blank" rel="noopener">応募フォームへ</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <img class="footer-logo" src="assets/logo.png" alt="なでモール">
+    <p>© なでモール — VRChat 撫でグループ</p>
+  </footer>
+
+</div>
+
+<script>
+/* Starfield */
+(function(){
+  const c = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  let stars = [], shoots = [], sparkles = [];
+  const STAR_COLORS = [
+    [210,225,255],[195,175,255],[170,235,255],[255,245,200],[255,210,230]
+  ];
+  const NEBULAE = [
+    { rx:0.22, ry:0.18, ex:500, ey:380, col:[79,200,200],   a:0.055 },
+    { rx:0.78, ry:0.72, ex:420, ey:520, col:[180,100,230],  a:0.045 },
+    { rx:0.55, ry:0.30, ex:360, ey:280, col:[80,110,240],   a:0.038 },
+    { rx:0.15, ry:0.75, ex:300, ey:380, col:[230,90,160],   a:0.030 },
+    { rx:0.88, ry:0.25, ex:280, ey:320, col:[100,220,210],  a:0.032 },
+  ];
+
+  function resize(){ c.width = innerWidth; c.height = innerHeight; }
+
+  function init(){
+    stars = [];
+    const n = Math.floor(c.width * c.height / 3800);
+    for(let i=0;i<n;i++){
+      const col = STAR_COLORS[Math.floor(Math.random()*STAR_COLORS.length)];
+      const r = Math.random()*1.5+0.1;
+      stars.push({
+        x: Math.random()*c.width, y: Math.random()*c.height,
+        r, a: Math.random()*0.75+0.15,
+        sp: Math.random()*.007+.002,
+        ph: Math.random()*Math.PI*2,
+        col, sparkle: r > 1.1 && Math.random() < 0.25
+      });
+    }
+  }
+
+  function spawnShoot(){
+    const angle = (Math.random()*25+8)*Math.PI/180;
+    shoots.push({
+      x: Math.random()*c.width*0.85,
+      y: Math.random()*c.height*0.5,
+      len: Math.random()*150+100,
+      speed: Math.random()*9+7,
+      life: 1,
+      dx: Math.cos(angle), dy: Math.sin(angle)
+    });
+  }
+
+  function drawNebulae(){
+    for(const n of NEBULAE){
+      const x = n.rx * c.width, y = n.ry * c.height;
+      const ex = Math.min(n.ex, c.width*0.4), ey = Math.min(n.ey, c.height*0.4);
+      const g = ctx.createRadialGradient(x,y,0,x,y,Math.max(ex,ey));
+      const [r,g2,b] = n.col;
+      g.addColorStop(0,   `rgba(${r},${g2},${b},${n.a})`);
+      g.addColorStop(0.4, `rgba(${r},${g2},${b},${n.a*0.5})`);
+      g.addColorStop(1,   `rgba(${r},${g2},${b},0)`);
+      ctx.save();
+      ctx.scale(ex/Math.max(ex,ey), ey/Math.max(ex,ey));
+      ctx.beginPath();
+      ctx.arc(x*(Math.max(ex,ey)/ex), y*(Math.max(ex,ey)/ey), Math.max(ex,ey), 0, Math.PI*2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawSparkle(x, y, r, a){
+    const len = r * 7;
+    ctx.save();
+    ctx.globalAlpha = a * 0.55;
+    ctx.strokeStyle = `rgba(220,240,255,1)`;
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x-len, y); ctx.lineTo(x+len, y);
+    ctx.moveTo(x, y-len); ctx.lineTo(x, y+len);
+    ctx.moveTo(x-len*0.5, y-len*0.5); ctx.lineTo(x+len*0.5, y+len*0.5);
+    ctx.moveTo(x+len*0.5, y-len*0.5); ctx.lineTo(x-len*0.5, y+len*0.5);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  let f = 0;
+  function draw(){
+    ctx.clearRect(0, 0, c.width, c.height);
+    f++;
+
+    // Nebula patches
+    ctx.save();
+    drawNebulae();
+    ctx.restore();
+
+    // Stars
+    for(const s of stars){
+      const a = s.a * (0.4 + 0.6 * Math.sin(f * s.sp + s.ph));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${s.col[0]},${s.col[1]},${s.col[2]},${a})`;
+      ctx.fill();
+      if(s.sparkle) drawSparkle(s.x, s.y, s.r, a);
+    }
+
+    // Shooting stars
+    if(Math.random() < 0.004) spawnShoot();
+    for(let i = shoots.length-1; i >= 0; i--){
+      const s = shoots[i];
+      const tail = ctx.createLinearGradient(s.x, s.y, s.x-s.dx*s.len, s.y-s.dy*s.len);
+      tail.addColorStop(0, `rgba(230,242,255,${s.life})`);
+      tail.addColorStop(0.3, `rgba(200,220,255,${s.life*0.4})`);
+      tail.addColorStop(1, 'rgba(200,220,255,0)');
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - s.dx*s.len, s.y - s.dy*s.len);
+      ctx.strokeStyle = tail; ctx.lineWidth = 1.8; ctx.stroke();
+      // Head glow
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 2, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(240,250,255,${s.life})`;
+      ctx.fill();
+      s.x += s.dx * s.speed; s.y += s.dy * s.speed;
+      s.life -= 0.025;
+      if(s.life <= 0) shoots.splice(i, 1);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize(); init(); draw();
+  window.addEventListener('resize', ()=>{ resize(); init(); });
+})();
+
+
+/* Scroll reveal */
+(function(){
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+  },{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>
