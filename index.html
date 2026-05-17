@@ -285,6 +285,7 @@
 
   /* ── Card ── */
   .member-card {
+    scroll-margin-top: 88px;
     position: relative;
     background: var(--card-bg);
     border-radius: 18px;
@@ -434,6 +435,154 @@
     mask-image: radial-gradient(circle, black 56%, transparent 76%);
     -webkit-mask-image: radial-gradient(circle, black 56%, transparent 76%);
   }
+
+  /* ── MAPPING ── */
+  .mapping-wrapper { max-width: 740px; margin: 48px auto 0; }
+  .mapping-grid {
+    position: relative;
+    padding: 40px 54px;
+  }
+  @media (max-width: 580px) { .mapping-grid { padding: 30px 36px; } }
+
+  .map-axlabel {
+    position: absolute;
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(0.68rem, 2vw, 0.88rem);
+    font-weight: 700;
+    color: var(--white);
+    opacity: 0.72;
+    text-align: center;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+  .map-axlabel-top    { top: 3px;    left: 50%; transform: translateX(-50%); }
+  .map-axlabel-bottom { bottom: 3px; left: 50%; transform: translateX(-50%); }
+  .map-axlabel-left   { left: 5px;   top: 50%;  transform: translateY(-50%); }
+  .map-axlabel-right  { right: 5px;  top: 50%;  transform: translateY(-50%); }
+
+  .mapping-chart {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+
+  .map-q {
+    position: absolute;
+    width: calc(50% - 1px);
+    height: calc(50% - 1px);
+    border-radius: 14px;
+    display: flex;
+    z-index: 1;
+    font-family: 'Kaisei Decol', serif;
+    font-size: clamp(0.78rem, 2.1vw, 1.15rem);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.55;
+    pointer-events: none;
+    text-align: center;
+  }
+  .map-q1 {
+    top: 0; left: 0;
+    align-items: flex-start; justify-content: flex-start;
+    padding: 10px 0 0 10px; text-align: left;
+    background: rgba(235,185,20,0.09); border: 1px solid rgba(235,185,20,0.22);
+    color: rgba(235,185,20,0.75);
+    text-shadow: 0 0 32px rgba(235,185,20,0.55), 0 0 8px rgba(235,185,20,0.3);
+  }
+  .map-q2 {
+    top: 0; right: 0;
+    align-items: flex-start; justify-content: flex-start;
+    padding: 10px 0 0 12px; text-align: left;
+    background: rgba(235,40,150,0.09); border: 1px solid rgba(235,40,150,0.22);
+    color: rgba(235,40,150,0.72);
+    text-shadow: 0 0 32px rgba(235,40,150,0.55), 0 0 8px rgba(235,40,150,0.3);
+  }
+  .map-q3 {
+    bottom: 0; left: 0;
+    align-items: flex-start; justify-content: flex-start;
+    padding: 29% 0 0 8%; text-align: left;
+    background: rgba(50,100,240,0.09); border: 1px solid rgba(50,100,240,0.22);
+    color: rgba(80,130,255,0.58);
+    text-shadow: 0 0 32px rgba(50,100,240,0.45);
+  }
+  .map-q4 {
+    bottom: 0; right: 0;
+    align-items: flex-end; justify-content: center;
+    padding: 0 0 12px 15%; text-align: center;
+    background: rgba(235,55,55,0.09); border: 1px solid rgba(235,55,55,0.22);
+    color: rgba(235,80,80,0.68);
+    text-shadow: 0 0 32px rgba(235,55,55,0.5), 0 0 8px rgba(235,55,55,0.3);
+  }
+
+  .map-ax { position: absolute; pointer-events: none; }
+  .map-ax-h { left:0; right:0; top:50%; height:1px; transform:translateY(-50%); background:rgba(255,255,255,0.15); }
+  .map-ax-v { top:0; bottom:0; left:50%; width:1px; transform:translateX(-50%); background:rgba(255,255,255,0.15); }
+
+  .map-arr { position:absolute; width:0; height:0; pointer-events:none; }
+  .map-arr-u { top:-7px;    left:50%;  transform:translateX(-50%); border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:8px solid rgba(255,255,255,0.2); }
+  .map-arr-d { bottom:-7px; left:50%;  transform:translateX(-50%); border-left:5px solid transparent; border-right:5px solid transparent; border-top:8px solid rgba(255,255,255,0.2); }
+  .map-arr-l { left:-7px;   top:50%;   transform:translateY(-50%); border-top:5px solid transparent; border-bottom:5px solid transparent; border-right:8px solid rgba(255,255,255,0.2); }
+  .map-arr-r { right:-7px;  top:50%;   transform:translateY(-50%); border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:8px solid rgba(255,255,255,0.2); }
+
+  .map-dot {
+    position: absolute;
+    z-index: 3;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translate(-50%, -50%);
+  }
+  .map-dot:hover { z-index: 20; }
+
+  .map-avatar {
+    width: clamp(28px, 4.2vw, 44px);
+    height: clamp(28px, 4.2vw, 44px);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2.5px solid rgba(255,255,255,0.22);
+    background: rgba(20,28,62,0.72);
+    transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s, border-color 0.25s;
+    flex-shrink: 0;
+  }
+  .map-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .map-avatar-ph  { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.28); font-size:1em; }
+
+  .map-lbl { display: none; }
+
+  .map-dot.q1 .map-avatar { border-color: rgba(235,185,20,0.42); }
+  .map-dot.q2 .map-avatar { border-color: rgba(235,40,150,0.42); }
+  .map-dot.q3 .map-avatar { border-color: rgba(50,100,240,0.42); }
+  .map-dot.q4 .map-avatar { border-color: rgba(235,55,55,0.42); }
+
+  .map-dot.q1:hover .map-avatar { transform:scale(1.52); box-shadow:0 0 16px rgba(235,185,20,0.6),0 4px 14px rgba(0,0,0,0.5); border-color:rgba(235,185,20,0.92); }
+  .map-dot.q2:hover .map-avatar { transform:scale(1.52); box-shadow:0 0 16px rgba(235,40,150,0.6),0 4px 14px rgba(0,0,0,0.5); border-color:rgba(235,40,150,0.92); }
+  .map-dot.q3:hover .map-avatar { transform:scale(1.52); box-shadow:0 0 16px rgba(50,100,240,0.6),0 4px 14px rgba(0,0,0,0.5); border-color:rgba(50,100,240,0.92); }
+  .map-dot.q4:hover .map-avatar { transform:scale(1.52); box-shadow:0 0 16px rgba(235,55,55,0.6),0 4px 14px rgba(0,0,0,0.5); border-color:rgba(235,55,55,0.92); }
+
+
+  #mapTip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    background: rgba(10,15,42,0.97);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 160px;
+    max-width: 230px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.15s;
+    backdrop-filter: blur(10px);
+  }
+  #mapTip.vis { opacity: 1; }
+  #mapTip .tn { font-family:'Kaisei Decol',serif; font-size:0.82rem; font-weight:700; color:var(--teal); margin-bottom:3px; }
+  #mapTip .te { font-size:0.68rem; color:var(--gold); margin-bottom:2px; opacity:0.85; }
+  #mapTip .ts { font-size:0.68rem; color:var(--muted); line-height:1.4; }
+  #mapTip .th { font-size:0.58rem; color:rgba(200,168,233,0.55); margin-top:5px; }
 </style>
 </head>
 <body>
@@ -446,6 +595,7 @@
   <ul class="nav-links">
     <li><a href="#concept">concept</a></li>
     <li><a href="#join">参加方法</a></li>
+    <li><a href="#mapping">mapping</a></li>
     <li><a href="#members">member</a></li>
     <li><a href="#recruit">募集</a></li>
   </ul>
@@ -538,6 +688,39 @@
 
   <div class="divider reveal"></div>
 
+  <!-- MAPPING -->
+  <section id="mapping">
+    <div class="section-inner">
+      <p class="section-label reveal">mapping</p>
+      <h2 class="members-heading reveal">撫で方マッピング</h2>
+      <p class="members-sub reveal">感度と速度で見る、それぞれのスタイル</p>
+      <div class="mapping-wrapper reveal">
+        <div class="mapping-grid">
+          <div class="map-axlabel map-axlabel-top">速度<br>高</div>
+          <div class="map-axlabel map-axlabel-bottom">速度<br>低</div>
+          <div class="map-axlabel map-axlabel-left">感度<br>低</div>
+          <div class="map-axlabel map-axlabel-right">感度<br>高</div>
+          <div class="mapping-chart" id="mappingChart">
+            <div class="map-q map-q1">爽やか・<br>リフレッシュ</div>
+            <div class="map-q map-q2">ドキドキ・<br>刺激</div>
+            <div class="map-q map-q3">癒し・<br>安らぎ</div>
+            <div class="map-q map-q4">温かみ・<br>余韻</div>
+            <div class="map-ax map-ax-h">
+              <div class="map-arr map-arr-l"></div>
+              <div class="map-arr map-arr-r"></div>
+            </div>
+            <div class="map-ax map-ax-v">
+              <div class="map-arr map-arr-u"></div>
+              <div class="map-arr map-arr-d"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider reveal"></div>
+
   <!-- MEMBERS -->
   <section id="members">
     <div class="section-inner">
@@ -548,7 +731,7 @@
       <div class="members-grid">
 
         <!-- うら -->
-        <div class="member-card reveal">
+        <div id="member-ura" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1BxVUdlmPyHMy1fmqcwWGbgu8AZL3C9nF" alt="うら" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -567,7 +750,7 @@
         </div>
 
         <!-- おこげ33 -->
-        <div class="member-card reveal">
+        <div id="member-okoge" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1ZkH6tIlkAEdrP8keiBw0DL1CP-lqJFG9" alt="おこげ33" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -586,7 +769,7 @@
         </div>
 
         <!-- ねこざらち -->
-        <div class="member-card reveal">
+        <div id="member-neko" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1elHbbhNiy1pRVQ8AOVKf1_LnOHtDiK-k" alt="ねこざらち" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -605,7 +788,7 @@
         </div>
 
         <!-- とこみや -->
-        <div class="member-card reveal">
+        <div id="member-tokomiya" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1wp5SAmawvmNBKjdidqofNHM3jBLjgMMb" alt="とこみや" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -624,7 +807,7 @@
         </div>
 
         <!-- いちや -->
-        <div class="member-card reveal">
+        <div id="member-ichiya" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1uVbhgD6Y51xr_pNRpHuBIfg7sSTHkenR" alt="いちや" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -643,7 +826,7 @@
         </div>
 
         <!-- シャノノン -->
-        <div class="member-card reveal">
+        <div id="member-shanonnon" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1pCJRwA6Gd6vRnBEHYc_tA4JaRgsHPQE_" alt="シャノノン" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -662,7 +845,7 @@
         </div>
 
         <!-- Romyyi -->
-        <div class="member-card reveal">
+        <div id="member-romyyi" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1xUIV7d301LtIoxEUuNxRXU7s0CItwdRC" alt="Romyyi" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -681,7 +864,7 @@
         </div>
 
         <!-- さんすう -->
-        <div class="member-card reveal">
+        <div id="member-sansuu" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1JnwVC0MzrSme6HJpJE4d9WhMPEMRb3OR" alt="さんすう" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -700,7 +883,7 @@
         </div>
 
         <!-- KissKill -->
-        <div class="member-card reveal">
+        <div id="member-kisskill" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1WlmvtafghzraBb6O-7DflJ_upY4QAPvJ" alt="KissKill" loading="lazy" style="object-position:center center" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -719,7 +902,7 @@
         </div>
 
         <!-- りとりと -->
-        <div class="member-card reveal">
+        <div id="member-ritorito" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/150_yQijBYKTFZ9TL4-FDkGb7O4O3QjXU" alt="りとりと" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -738,7 +921,7 @@
         </div>
 
         <!-- shuriken -->
-        <div class="member-card reveal">
+        <div id="member-shuriken" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1QlbD9LLnLnz2wweEReU2wsxF4DQm8Xwo" alt="shuriken" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -757,7 +940,7 @@
         </div>
 
         <!-- てすたー -->
-        <div class="member-card reveal">
+        <div id="member-tesutaa" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1_6KJScplRjjB7U_8h4wdJWb-TyFT_-22" alt="てすたー" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -776,7 +959,7 @@
         </div>
 
         <!-- ほのみん -->
-        <div class="member-card reveal">
+        <div id="member-honomin" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1POBSsiHigdttv2XcOhdoZ430K_8DuS6U" alt="ほのみん" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -795,7 +978,7 @@
         </div>
 
         <!-- せれす -->
-        <div class="member-card reveal">
+        <div id="member-seresu" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1H-C6n3GfkpYmSdRxBRpg2DTpZdrpUR7O" alt="せれす" loading="lazy" style="object-position:center 25%" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -814,7 +997,7 @@
         </div>
 
         <!-- れがしー -->
-        <div class="member-card reveal">
+        <div id="member-regashii" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1C29RTNINNQAeldh1OLlVRGNKRvY-zu93" alt="れがしー" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -833,7 +1016,7 @@
         </div>
 
         <!-- ずむるっど -->
-        <div class="member-card reveal">
+        <div id="member-zumurudo" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/11ufLfq0EOQFEI7pST_PAP25059Yb2I4t" alt="ずむるっど" loading="lazy" style="object-position:center center" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -852,7 +1035,7 @@
         </div>
 
         <!-- myi-su -->
-        <div class="member-card reveal">
+        <div id="member-myisu" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1k-UxBvarWV7VNnKEShEXypMi_y7l8xuc" alt="myi-su" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -870,7 +1053,7 @@
         </div>
 
         <!-- Chiyo_k -->
-        <div class="member-card reveal">
+        <div id="member-chiyo" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1s4QKTcAqiHsRJ3dye_VPOD-P4MbRLXng" alt="Chiyo_k" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -889,7 +1072,7 @@
         </div>
 
         <!-- たぬきち丸 -->
-        <div class="member-card reveal">
+        <div id="member-tanukichi" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1XeMGE8HLoUG_jkaDEXit6j9yYFLovhkU" alt="たぬきち丸" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -908,7 +1091,7 @@
         </div>
 
         <!-- ニーナ -->
-        <div class="member-card reveal">
+        <div id="member-niina" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1mJZOojdIfGl4g57vIKSLeCa8f_FnJWZn" alt="ニーナ" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -926,7 +1109,7 @@
         </div>
 
         <!-- ゆきひら -->
-        <div class="member-card reveal">
+        <div id="member-yukihira" class="member-card reveal">
           <div class="card-photo-wrap">
             <img class="card-photo" src="https://lh3.googleusercontent.com/d/1lHk8eIN5fbE_ZxkFODncqksk9sVrTwB3" alt="ゆきひら" loading="lazy" onerror="this.parentElement.classList.add('no-photo')">
             <div class="card-photo-overlay"></div>
@@ -1106,6 +1289,100 @@
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
   },{threshold:.1});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+</script>
+
+<script>
+/* ── Mapping chart ── */
+(function(){
+  const data = [
+    // Q1 爽やか・リフレッシュ (低感度, 高速度)
+    {id:'ichiya',    name:'いちや',    x:30, y:18, q:1, p:'https://lh3.googleusercontent.com/d/1uVbhgD6Y51xr_pNRpHuBIfg7sSTHkenR', ev:'いちやの撫で練習',         st:'おしゃべりしながらわしゃわしゃ撫で'},
+    {id:'tokomiya',  name:'とこみや',  x:42, y:34, q:1, p:'https://lh3.googleusercontent.com/d/1wp5SAmawvmNBKjdidqofNHM3jBLjgMMb', ev:'個人なで屋 ゆらぎ',         st:'対面・鏡撫で、パフォーマンスよりの動き'},
+    {id:'chiyo',     name:'Chiyo_k',  x:31, y:43, q:1, p:'https://lh3.googleusercontent.com/d/1s4QKTcAqiHsRJ3dye_VPOD-P4MbRLXng', ev:'ちよなでモール店',           st:'優しさたっぷり、いたずらをひとつまみ'},
+    {id:'myisu',     name:'myi-su',   x:40, y:43, q:1, p:'https://lh3.googleusercontent.com/d/1k-UxBvarWV7VNnKEShEXypMi_y7l8xuc', ev:'Warma fusya',              st:'袖を使ったゆったりめの撫で'},
+    // Q2 ドキドキ・刺激 (高感度, 高速度)
+    {id:'honomin',   name:'ほのみん',  x:63, y:36, q:2, p:'https://lh3.googleusercontent.com/d/1POBSsiHigdttv2XcOhdoZ430K_8DuS6U', ev:'ほのなで',                  st:'ASMR・感度刺激系、距離感近め'},
+    {id:'seresu',    name:'せれす',   x:95, y:4,  q:2, p:'https://lh3.googleusercontent.com/d/1H-C6n3GfkpYmSdRxBRpg2DTpZdrpUR7O', ev:'Rub Room',                 st:'対面・鏡撫で・えっちな感度撫で'},
+    // Q3 癒し・安らぎ (低感度, 低速度)
+    {id:'okoge',     name:'おこげ33', x:7,  y:63, q:3, p:'https://lh3.googleusercontent.com/d/1ZkH6tIlkAEdrP8keiBw0DL1CP-lqJFG9', ev:'おこげさんのなでなで部屋',  st:'対面・鏡越し・膝枕'},
+    {id:'neko',      name:'ねこざらち',x:27, y:67, q:3, p:'https://lh3.googleusercontent.com/d/1elHbbhNiy1pRVQ8AOVKf1_LnOHtDiK-k', ev:'ねこちのおにわ',           st:'ゆっくり対面なで＋ASMR'},
+    {id:'sansuu',    name:'さんすう', x:35, y:67, q:3, p:'https://lh3.googleusercontent.com/d/1JnwVC0MzrSme6HJpJE4d9WhMPEMRb3OR', ev:'さんすうさんのナデルーム',  st:'対面・鏡撫で・ゆっくり癒し系'},
+    {id:'ritorito',  name:'りとりと', x:42, y:63, q:3, p:'https://lh3.googleusercontent.com/d/150_yQijBYKTFZ9TL4-FDkGb7O4O3QjXU', ev:'なで日和',                 st:'お話や音を楽しみながらの癒し撫で'},
+    {id:'kisskill',  name:'ショウガ', x:48, y:57, q:3, p:'https://lh3.googleusercontent.com/d/1WlmvtafghzraBb6O-7DflJ_upY4QAPvJ', ev:'Team KissKill',             st:'膝枕・横になって撫で寝かし'},
+    {id:'shanonnon', name:'シャノノン',x:8,  y:82, q:3, p:'https://lh3.googleusercontent.com/d/1pCJRwA6Gd6vRnBEHYc_tA4JaRgsHPQE_', ev:'シャノノンのゆるなで',     st:'対面・鏡撫で 寝かしつけ ポンポン'},
+    {id:'romyyi',    name:'ロミー',   x:18, y:82, q:3, p:'https://lh3.googleusercontent.com/d/1xUIV7d301LtIoxEUuNxRXU7s0CItwdRC', ev:'Romyyiより',                st:'対面・鏡・膝枕・のんびり系'},
+    {id:'tesutaa',   name:'てすたー', x:30, y:87, q:3, p:'https://lh3.googleusercontent.com/d/1_6KJScplRjjB7U_8h4wdJWb-TyFT_-22', ev:'てすなで',                  st:'正面からの癒し系'},
+    {id:'regashii',  name:'れがしー', x:39, y:87, q:3, p:'https://lh3.googleusercontent.com/d/1C29RTNINNQAeldh1OLlVRGNKRvY-zu93', ev:'なでのま',                  st:'対面・鏡越し・膝枕・ASMR'},
+    {id:'shuriken',  name:'shuriken', x:47, y:76, q:3, p:'https://lh3.googleusercontent.com/d/1QlbD9LLnLnz2wweEReU2wsxF4DQm8Xwo', ev:'なで日和',                  st:'正面か後ろから静かにもふもふ撫で'},
+    // Q4 温かみ・余韻 (高感度, 低速度)
+    {id:'niina',     name:'ニーナ',   x:55, y:57, q:4, p:'https://lh3.googleusercontent.com/d/1mJZOojdIfGl4g57vIKSLeCa8f_FnJWZn', ev:'２７なで',                  st:'対面・鏡・膝枕・抱きしめ撫で'},
+    {id:'tanukichi', name:'たぬきち丸',x:81, y:56, q:4, p:'https://lh3.googleusercontent.com/d/1XeMGE8HLoUG_jkaDEXit6j9yYFLovhkU', ev:'たぬきの毛づくろい部屋',  st:'対面・鏡・膝枕・V感刺激系'},
+    {id:'yukihira',  name:'ゆきひら', x:69, y:77, q:4, p:'https://lh3.googleusercontent.com/d/1lHk8eIN5fbE_ZxkFODncqksk9sVrTwB3', ev:'ゆきなで',                  st:'対面＆鏡撫で 癒し～寝かしつけ系'},
+    {id:'ura',       name:'うら',     x:82, y:68, q:4, p:'https://lh3.googleusercontent.com/d/1BxVUdlmPyHMy1fmqcwWGbgu8AZL3C9nF', ev:'うらなで',                  st:'対面＆鏡撫で、温かみの距離感'},
+    {id:'kisskill',  name:'御月',     x:61, y:76, q:4, p:'https://lh3.googleusercontent.com/d/1WlmvtafghzraBb6O-7DflJ_upY4QAPvJ', ev:'Team KissKill',             st:'膝枕・横になって撫で寝かし'},
+    {id:'zumurudo',  name:'ずむるっど',x:67, y:87, q:4, p:'https://lh3.googleusercontent.com/d/11ufLfq0EOQFEI7pST_PAP25059Yb2I4t', ev:'なで教室',                 st:'対面＆鏡なで・ゆっくり落ち着く系'},
+    {id:'mochiame',  name:'もちあめ', x:92, y:93, q:4, p:'assets/mochiame.png',                                                        ev:'',                         st:'癒し系'},
+  ];
+
+  const chart = document.getElementById('mappingChart');
+  if (!chart) return;
+
+  data.forEach(m => {
+    const a = document.createElement('a');
+    a.className = 'map-dot q' + m.q;
+    a.style.left = m.x + '%';
+    a.style.top  = m.y + '%';
+    if (m.id && m.id !== 'mochiame') a.href = '#member-' + m.id;
+    else a.style.cursor = 'default';
+    a.dataset.n = m.name;
+    a.dataset.e = m.ev;
+    a.dataset.s = m.st;
+
+    const av = document.createElement('div');
+    av.className = 'map-avatar';
+    if (m.p) {
+      const img = document.createElement('img');
+      img.src = m.p; img.alt = m.name; img.loading = 'lazy';
+      av.appendChild(img);
+    } else {
+      const ph = document.createElement('div');
+      ph.className = 'map-avatar-ph'; ph.textContent = '?';
+      av.appendChild(ph);
+    }
+
+    const lbl = document.createElement('div');
+    lbl.className = 'map-lbl'; lbl.textContent = m.name;
+
+    a.appendChild(av); a.appendChild(lbl);
+    chart.appendChild(a);
+  });
+
+  const tip = document.createElement('div');
+  tip.id = 'mapTip';
+  tip.innerHTML = '<div class="tn"></div><div class="te"></div><div class="ts"></div><div class="th">クリックでカードへ ↓</div>';
+  document.body.appendChild(tip);
+
+  const tn = tip.querySelector('.tn');
+  const te = tip.querySelector('.te');
+  const ts = tip.querySelector('.ts');
+
+  document.querySelectorAll('.map-dot').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      tn.textContent = el.dataset.n;
+      te.textContent = el.dataset.e || '';
+      ts.textContent = el.dataset.s;
+      tip.querySelector('.th').style.display = el.href ? '' : 'none';
+      tip.classList.add('vis');
+    });
+    el.addEventListener('mousemove', e => {
+      const tw = tip.offsetWidth, th2 = tip.offsetHeight;
+      const vw = window.innerWidth,  vh = window.innerHeight;
+      tip.style.left = (e.clientX + 14 + tw > vw ? e.clientX - tw - 14 : e.clientX + 14) + 'px';
+      tip.style.top  = (e.clientY + 14 + th2 > vh ? e.clientY - th2 - 8 : e.clientY + 14) + 'px';
+    });
+    el.addEventListener('mouseleave', () => tip.classList.remove('vis'));
+  });
 })();
 </script>
 </body>
