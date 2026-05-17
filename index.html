@@ -583,6 +583,72 @@
   #mapTip .te { font-size:0.68rem; color:var(--gold); margin-bottom:2px; opacity:0.85; }
   #mapTip .ts { font-size:0.68rem; color:var(--muted); line-height:1.4; }
   #mapTip .th { font-size:0.58rem; color:rgba(200,168,233,0.55); margin-top:5px; }
+
+  /* Mobile: larger touch targets */
+  @media (hover: none) {
+    .map-avatar {
+      width: clamp(36px, 9vw, 52px);
+      height: clamp(36px, 9vw, 52px);
+    }
+    .map-dot.active .map-avatar { transform: scale(1.25); }
+    .map-dot.active.q1 .map-avatar { box-shadow:0 0 14px rgba(235,185,20,0.7); border-color:rgba(235,185,20,0.95); }
+    .map-dot.active.q2 .map-avatar { box-shadow:0 0 14px rgba(235,40,150,0.7); border-color:rgba(235,40,150,0.95); }
+    .map-dot.active.q3 .map-avatar { box-shadow:0 0 14px rgba(50,100,240,0.7); border-color:rgba(50,100,240,0.95); }
+    .map-dot.active.q4 .map-avatar { box-shadow:0 0 14px rgba(235,55,55,0.7); border-color:rgba(235,55,55,0.95); }
+  }
+
+  /* Bottom panel (touch) */
+  #mapPanel {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9998;
+    background: rgba(10,15,42,0.97);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 32px;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(.22,1,.36,1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  #mapPanel.vis { transform: translateY(0); }
+  #mapPanel .mp-av {
+    width: 56px; height: 56px;
+    border-radius: 50%; overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.22);
+    background: rgba(20,28,62,0.8);
+  }
+  #mapPanel .mp-av img { width:100%; height:100%; object-fit:cover; display:block; }
+  #mapPanel .mp-info { flex: 1; min-width: 0; padding-top: 2px; }
+  #mapPanel .mp-name { font-family:'Kaisei Decol',serif; font-size:1.05rem; font-weight:700; color:var(--teal); }
+  #mapPanel .mp-ev { font-size:0.75rem; color:var(--gold); margin-top:3px; opacity:0.9; }
+  #mapPanel .mp-st { font-size:0.75rem; color:var(--muted); margin-top:5px; line-height:1.45; }
+  #mapPanel .mp-btn {
+    display: inline-block; margin-top: 10px;
+    padding: 7px 18px; border-radius: 20px;
+    background: rgba(100,180,255,0.12);
+    color: var(--teal); font-size: 0.75rem;
+    text-decoration: none;
+    border: 1px solid rgba(100,180,255,0.25);
+    font-family: 'Kaisei Decol', serif;
+  }
+  #mapPanel .mp-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none;
+    color: rgba(255,255,255,0.35); font-size: 1.4rem;
+    cursor: pointer; padding: 4px; line-height: 1;
+  }
+  #mapPanel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+  }
+  #mapPanel-overlay.vis { display: block; }
 </style>
 </head>
 <body>
@@ -1328,6 +1394,47 @@
   const chart = document.getElementById('mappingChart');
   if (!chart) return;
 
+  const isTouch = window.matchMedia('(hover: none)').matches;
+
+  /* ── Bottom panel (touch devices) ── */
+  const overlay = document.createElement('div');
+  overlay.id = 'mapPanel-overlay';
+  document.body.appendChild(overlay);
+
+  const panel = document.createElement('div');
+  panel.id = 'mapPanel';
+  panel.innerHTML = '<button class="mp-close" aria-label="閉じる">×</button>'
+    + '<div class="mp-av"><img id="mpImg" src="" alt=""></div>'
+    + '<div class="mp-info"><div class="mp-name" id="mpName"></div>'
+    + '<div class="mp-ev" id="mpEv"></div>'
+    + '<div class="mp-st" id="mpSt"></div>'
+    + '<a class="mp-btn" id="mpBtn" href="#">カードへ ↓</a></div>';
+  document.body.appendChild(panel);
+
+  let _activeEl = null;
+  function showPanel(m, el) {
+    document.querySelectorAll('.map-dot.active').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+    _activeEl = el;
+    document.getElementById('mpImg').src = m.p || '';
+    document.getElementById('mpImg').alt = m.name;
+    document.getElementById('mpName').textContent = m.name;
+    document.getElementById('mpEv').textContent = m.ev || '';
+    document.getElementById('mpSt').textContent = m.st;
+    const btn = document.getElementById('mpBtn');
+    if (m.id && m.id !== 'mochiame') { btn.href = '#member-' + m.id; btn.style.display = ''; }
+    else btn.style.display = 'none';
+    panel.classList.add('vis');
+    overlay.classList.add('vis');
+  }
+  function hidePanel() {
+    panel.classList.remove('vis');
+    overlay.classList.remove('vis');
+    if (_activeEl) { _activeEl.classList.remove('active'); _activeEl = null; }
+  }
+  panel.querySelector('.mp-close').addEventListener('click', hidePanel);
+  overlay.addEventListener('click', hidePanel);
+
   data.forEach(m => {
     const a = document.createElement('a');
     a.className = 'map-dot q' + m.q;
@@ -1356,6 +1463,13 @@
 
     a.appendChild(av); a.appendChild(lbl);
     chart.appendChild(a);
+
+    if (isTouch) {
+      a.addEventListener('touchstart', e => {
+        e.preventDefault();
+        showPanel(m, a);
+      }, { passive: false });
+    }
   });
 
   const tip = document.createElement('div');
