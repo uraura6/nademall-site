@@ -1435,6 +1435,19 @@
   panel.querySelector('.mp-close').addEventListener('click', hidePanel);
   overlay.addEventListener('click', hidePanel);
 
+  panel.querySelector('#mpBtn').addEventListener('click', e => {
+    e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    hidePanel();
+    setTimeout(() => {
+      const target = document.querySelector(href);
+      if (!target) return;
+      const navH = document.querySelector('nav')?.offsetHeight || 0;
+      const top = target.getBoundingClientRect().top + window.scrollY - navH - 8;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }, 340);
+  });
+
   data.forEach(m => {
     const a = document.createElement('a');
     a.className = 'map-dot q' + m.q;
